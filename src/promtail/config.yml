@@ -1,0 +1,7 @@
+scrape_configs:
+ - job_name: containers
+
+   static_configs:
+       labels:
+         job: containerlogs
+         __path__: ./nginx/log/*log

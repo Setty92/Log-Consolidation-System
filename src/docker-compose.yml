@@ -16,7 +16,11 @@ services:
     hostname: nginx-entrypoint
     container_name: nginx-entrypoint
     restart: unless-stopped
-    <<: *default-logging
+    # <<: *default-logging
+    logging:
+      driver: "json-file"
+      options:
+        tag: "{{.ImageName}}|{{.Name}}"
     environment:
       TZ: "Asia/Novosibirsk"
     ports:
@@ -26,6 +30,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
+    volumes:
+      - ./nginx/log:/var/log/nginx
   
   loki:
     hostname: loki
@@ -48,3 +54,10 @@ services:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
+  
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./nginx/log:/var/log
+      - ./promtail:/etc/promtail
+    command: -config.file=/etc/promtail/config.yaml
