@@ -1,2 +1,4 @@
 
 /src/nginx/log
+src/nginx/log/access.log
+src/nginx/log/error.log
