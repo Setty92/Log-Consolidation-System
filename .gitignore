@@ -1,3 +1,5 @@
 /src/nginx/log
 src/nginx/log/access.log
 src/nginx/log/error.log
+/src/nginx/react-redux-realworld-example-app
+/src/web/aspnetcore-realworld-example-app

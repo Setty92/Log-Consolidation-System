@@ -17,3 +17,12 @@ scrape_configs:
         job: nginx
         __path__: /var/log/nginx/*log
 
+  - job_name: minio
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        job: minio
+        __path__: /var/log/nginx/*log
+
+

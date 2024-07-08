@@ -32,6 +32,19 @@ services:
       retries: 20
     volumes:
       - ./nginx/log:/var/log/nginx
+      - ./nginx/react-redux-realworld-example-app/build:/usr/share/nginx/html
+
+  web:
+    build:
+      context: ./web/aspnetcore-realworld-example-app
+      dockerfile: Dockerfile
+    container_name: aspnetcore-web
+    restart: unless-stopped
+    <<: *default-logging
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
   
   loki:
     hostname: loki
@@ -61,3 +74,28 @@ services:
       - ./nginx/log:/var/log/nginx
       - ./promtail:/etc/promtail
     command: -config.file=/etc/promtail/config.yml
+  
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio
+
+  mc:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin &&
+      /usr/bin/mc mb myminio/nginx-logs;
+      "
